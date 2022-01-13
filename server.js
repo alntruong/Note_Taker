@@ -1,20 +1,27 @@
-const express = require('express')
-const path = require('path')
+const express = require('express');
+const fs = require('fs')
+const path = require('path');
 
-const app = express()
+const http = require('http');
+const port = 3000
 
-app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
-
-app.use(require('./routes/itemRoutes.js'))
-
-app.get('/notes', (req, res) => {
- res.sendFile(path.join(__dirname, 'public', 'notes.html'))
+const server = http.createServer(function(req, res) {
+ res.writeHead(200, { 'Content-Type': 'text/html' })
+ fs.readFile('./public/index.html', function(error, data) {
+  if (error) {
+   res.writeHead(404)
+   res.write('Error: File Not Found')
+  } else {
+   res.write(data)
+  }
+  res.end()
+ })
 })
-app.get('*', (req, res) => {
- res.sendFile(path.join(__dirname, 'public', 'index.html'))
-})
 
-const port = process.env.PORT || 4000;
-app.listen(port);
+server.listen(port, function(error) {
+ if (error) {
+  console.log('Something went wrong', err)
+ } else {
+  console.log('Server is listening on port ' + port)
+ }
+})
