@@ -1,27 +1,17 @@
 const express = require('express');
-const fs = require('fs')
-const path = require('path');
+const apiRoutes = require('./routes/apiRoutes');
+const htmlRoutes = require('./routes/htmlRoutes');
 
-const http = require('http');
-const port = 3000
+// Initialize the app and create a port
+const app = express();
+const PORT = process.env.PORT || 3001;
 
-const server = http.createServer(function(req, res) {
- res.writeHead(200, { 'Content-Type': 'text/html' })
- fs.readFile('./public/index.html', function(error, data) {
-  if (error) {
-   res.writeHead(404)
-   res.write('Error: File Not Found')
-  } else {
-   res.write(data)
-  }
-  res.end()
- })
-})
+// Set up body parsing, static, and route middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+app.use('/api', apiRoutes);
+app.use('/', htmlRoutes);
 
-server.listen(port, function(error) {
- if (error) {
-  console.log('Something went wrong', err)
- } else {
-  console.log('Server is listening on port ' + port)
- }
-})
+// Start the server on the port
+app.listen(PORT, () => console.log(`Listening on PORT: ${PORT}`));
